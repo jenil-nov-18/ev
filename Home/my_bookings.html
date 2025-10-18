@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>My Bookings - EV Charging</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <!-- Header simplified copy -->
+    <header class="header-section clearfix">
+        <a href="home.html" class="site-logo">
+            <img src="../Login_SignUp/IMG/final_logo.png" style="padding: 10px;" width="160px" height="110px" alt="">
+        </a>
+        <div class="header-right">
+            <a href="#" class="hr-btn">Help</a>
+            <span>|</span>
+            <div class="user-panel">
+                <a href="" class="login">Login</a>
+                <a href="" class="register">Create an account</a>
+            </div>
+        </div>
+        <ul class="main-menu">
+            <li><a href="home.html">Home</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </header>
+
+    <div class="container" style="margin-top:40px;">
+        <h2>My Bookings</h2>
+        <div id="bookingsList">
+            <p>Loading your bookings...</p>
+        </div>
+    </div>
+
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <script src="../Login_SignUp/js/auth-include.js"></script>
+    <script src="../Login_SignUp/js/auth.js"></script>
+    <script>
+    (function(){
+        function render(){
+            var cur = window.EVAuth && window.EVAuth.getCurrentUser ? window.EVAuth.getCurrentUser() : null;
+            var listEl = document.getElementById('bookingsList');
+            if(!cur){
+                listEl.innerHTML = '<p>Please login to see your bookings.</p>';
+                return;
+            }
+            var bookings = window.EVAuth.getBookingsForUser(cur.email) || [];
+            if(bookings.length === 0){
+                listEl.innerHTML = '<p>You have no bookings.</p>';
+                return;
+            }
+            var html = '<ul class="list-group">';
+            bookings.forEach(function(b){
+                html += '<li class="list-group-item" id="bk_' + b.id + '">';
+                html += '<strong>' + (b.time || ('Slot ' + b.seatIndex)) + '</strong>';
+                html += '<div style="float:right;">';
+                html += '<button data-id="' + b.id + '" class="btn btn-sm btn-danger cancelBtn">Cancel</button>';
+                html += '</div>';
+                html += '<div style="clear:both;"></div>';
+                html += '</li>';
+            });
+            html += '</ul>';
+            listEl.innerHTML = html;
+            // attach handlers
+            var btns = document.querySelectorAll('.cancelBtn');
+            btns.forEach(function(btn){
+                btn.addEventListener('click', function(e){
+                    var id = this.getAttribute('data-id');
+                    if(!confirm('Cancel this booking?')) return;
+                    var res = window.EVAuth.cancelBooking(id);
+                    if(res && res.ok){
+                        var item = document.getElementById('bk_' + id);
+                        if(item) item.parentNode.removeChild(item);
+                        // re-render if none left
+                        var remaining = window.EVAuth.getBookingsForUser(cur.email) || [];
+                        if(remaining.length === 0) document.getElementById('bookingsList').innerHTML = '<p>You have no bookings.</p>';
+                    } else {
+                        alert((res && res.message) ? res.message : 'Failed to cancel');
+                    }
+                });
+            });
+        }
+        // wait briefly for EVAuth to be available if scripts load slowly
+        function waitThenRender(attempts){
+            attempts = attempts || 0;
+            if(window.EVAuth && window.EVAuth.getCurrentUser){ render(); }
+            else if(attempts < 10) setTimeout(function(){ waitThenRender(attempts+1); }, 150);
+            else document.getElementById('bookingsList').innerHTML = '<p>Booking system unavailable.</p>';
+        }
+        waitThenRender(0);
+    })();
+    </script>
+</body>
+</html>

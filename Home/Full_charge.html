@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <link rel="stylesheet" href="style.css"> -->
+  <style>
+    *{
+  text-decoration: none;
+  list-style: none;
+}
+
+.seat {
+  height: 60px;
+    width: 146px;
+    border-radius: 14px;
+    cursor: pointer;
+    margin: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+}
+  </style>
+  <meta charset="UTF-8">
+	<meta name="description" content="EV CHARGING SYSTEM">
+	<meta name="keywords" content="EVS, html">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<!-- Favicon -->
+	<link href="img/favicon.ico" rel="shortcut icon"/>
+
+	<!-- Google font -->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i&display=swap" rel="stylesheet">
+ 
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="css/font-awesome.min.css"/>
+	<link rel="stylesheet" href="css/owl.carousel.min.css"/>
+	<link rel="stylesheet" href="css/slicknav.min.css"/>
+
+	<!-- Main Stylesheets -->
+	<link rel="stylesheet" href="css/style.css"/>
+  <title>Document</title>
+</head>
+<body>
+ 
+  <header class="header-section clearfix">
+		<a href="index.html" class="site-logo">
+			<img  src="../Login_SignUp/IMG/final_logo.png" style="padding: 10px;" width="160px" height="110px" alt="">
+		</a>
+		<div class="header-right">
+			<a href="#" class="hr-btn">Help</a>
+			<span>|</span>
+			<div class="user-panel">
+				<a href="../Login_SignUp/Login/login.html" class="login">Login</a>
+				<a href="../Login_SignUp/signup.html" class="register">Create an account</a>
+			</div> 
+		</div>
+		<ul class="main-menu">
+			<li><a href="home.html">Home</a></li>
+			<li><a href="#">Charge Type</a>
+				<ul class="sub-menu">
+					<li><a href="Half_charge.html">Half Charge</a></li>
+					<li><a href="Full_charge.html">Full Charge</a></li>
+					<!-- <li><a href="artist.html">Four </a></li> -->
+			
+				</ul>
+			</li>
+			<li><a href="blog.html">News</a></li>
+			<li><a href="contact.html">Contact</a></li>
+		</ul>
+	</header>
+  <div class="container">
+    <ul class="list">
+
+    </ul>    
+  </div>
+  <footer class="footer-section">
+    <div class="container1">
+      
+      <P align = " Center "><Font color="white" size = "20">C O N T A C T &nbsp  U S</Font></P>
+      <p align = " Center ">Tel: +91 1234567890</p>
+      <p align = "Center" >Address:V.V.P Engineering college, Rajkot , Gujarat 360005</p>
+         
+      <div class="col-xl-6 col-lg-5 order-lg-1" id="ss" style="margin-left:400px;">
+          
+          
+          <div align = "center" class="social-links">
+            
+            <a href=""><i class="fa fa-instagram"></i></a>
+            <a href=""><i class="fa fa-pinterest"></i></a>
+            <a href=""><i class="fa fa-facebook"></i></a>
+          
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+</body>
+
+
+<script>
+  let localSeats = localStorage.getItem('seats') ? localStorage.getItem('seats').split(',') : null;
+
+if(!localSeats) {
+  const seats = new Array(24).fill(false);
+  localStorage.setItem('seats', seats);
+  localSeats = seats;
+  console.log(localSeats);
+}
+
+const makeSeats = (no) => 
+{
+  var ul = document.querySelector(".list");
+  var li = document.createElement("li");
+  li.className = 'seat';
+  if(localSeats[no] == 'true') {
+    // console.log(localSeats[no]);
+    li.style.backgroundColor = 'green'
+  }
+  else {
+    li.style.backgroundColor = 'gray';
+  }
+  ul.appendChild(li);
+  li.innerHTML=array[no];
+}
+
+var array=["12:00AM-1:00AM","1:00AM-2:00AM","2:00AM-3:00AM","3:00AM-4:00AM","4:00AM-5:00AM","5:00AM-6:00AM","6:00AM-7:00AM","7:00AM-8:00AM","8:00AM-9:00AM","9:00AM-10:00AM","10:00AM-11:00AM","11:00AM-12:00PM","12:00PM-1:00PM","1:00PM-2:00PM","2:00PM-3:00PM","3:00PM-4:00PM","4:00PM-5:00PM","5:00PM-6:00PM","6:00PM-7:00PM","7:00PM-8:00PM","8:00PM-9:00PM","9:00PM-10:00PM","10:00PM-11:00PM","11:00PM-12:00PM"];
+
+const clickSeat = (no, el) => {
+  localSeats[no] = 'true';
+ // localStorage.removeItem('seats');
+  localStorage.setItem('seats', localSeats);
+  el.style.backgroundColor = 'green';
+  localSeats[no] == 'true' ? window.open('v_details.html', '_blank') : '/';
+}
+
+const handleArrow = (no, el) => {
+  localSeats[no] === 'true' ? el.style.cursor = 'default' : '';
+}
+
+for(let i = 0; i < 24; i++) {
+  makeSeats(i);
+}
+
+const element = document.querySelectorAll('.seat');
+for(let i = 0; i < 24; i++) {
+  element[i].addEventListener('click', (el) => clickSeat(i, element[i]))
+  element[i].addEventListener('mousemove', (el) => handleArrow(i, element[i]))
+}
+//localStorage.clear();
+</script>
+
+<!-- auth header sync -->
+<script src="../Login_SignUp/js/auth-include.js"></script>
+<script src="../Login_SignUp/js/auth.js"></script>
+
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <link rel="stylesheet" href="style.css"> -->
+  <style>
+    *{
+  text-decoration: none;
+  list-style: none;
+}
+
+.seat {
+  height: 60px;
+    width: 146px;
+    border-radius: 14px;
+    cursor: pointer;
+    margin: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+}
+  </style>
+  <title>Document</title>
+</head>
+<body>
+  <div class="container">
+    <ul class="list">
+
+    </ul>    
+  </div>
+</body>
+<script>
+  let localSeats = localStorage.getItem('seats') ? localStorage.getItem('seats').split(',') : null;
+
+if(!localSeats) {
+  const seats = new Array(48).fill(false);
+  localStorage.setItem('seats', seats);
+  localSeats = seats;
+  console.log(localSeats);
+}
+
+const makeSeats = (no) => 
+{
+  var ul = document.querySelector(".list");
+  var li = document.createElement("li");
+  li.className = 'seat';
+  if(localSeats[no] == 'true') {
+    // console.log(localSeats[no]);
+    li.style.backgroundColor = 'green'
+  }
+  else {
+    li.style.backgroundColor = 'gray';
+  }
+  ul.appendChild(li);
+  li.innerHTML=array[no];
+}
+
+var array=["12:00AM-12:30AM","12:30AM-1:00AM","1:00AM-1:30AM","1:30AM-2:00AM","2:00AM-2:30AM","2:30AM-3:00AM","3:00AM-3:30AM","3:30AM-4:00AM","4:00AM-4:30AM","4:30AM-5:00AM","5:00AM-5:30AM","5:30AM-6:00AM","6:00AM-6:30AM","6:30AM-7:00AM","7:00AM-7:30AM","7:30AM-8:00AM","8:00AM-8:30AM","8:30AM-9:00AM","9:00AM-9:30AM","9:30AM-10:00AM","10:00AM-10:30AM","10:30AM-11:00AM","11:00AM-11:30AM","11:30AM-12:00PM","12:00PM-12:30PM","12:30PM-1:00PM","1:00PM-1:30PM","1:30PM-2:00PM","2:00PM-2:30PM","2:30PM-3:00PM","3:00PM-3:30PM","3:30PM-4:00PM","4:00PM-4:30PM","4:30PM-5:00PM","5:00PM-5:30PM","5:30PM-6:00PM","6:00PM-6:30PM","6:30PM-7:00PM","7:00PM-7:30PM","7:30PM-8:00PM","8:00PM-8:30PM","8:30PM-9:00PM","9:00PM-9:30PM","9:30PM-10:00PM","10:00PM-10:30PM","10:30PM-11:00PM","11:00PM-11:30PM","11:30PM-12:00PM"];
+
+const clickSeat = (no, el) => {
+  if(localSeats[no] === 'true'){
+    alert('This slot is already booked. Please choose another slot.');
+    return;
+  }
+  localStorage.setItem('selectedSeat', String(no));
+  window.location.href = 'v_details.html';
+}
+
+const handleArrow = (no, el) => {
+  localSeats[no] === 'true' ? el.style.cursor = 'default' : '';
+}
+
+for(let i = 0; i < 48; i++) {
+  makeSeats(i);
+}
+
+const element = document.querySelectorAll('.seat');
+for(let i = 0; i < 48; i++) {
+  element[i].addEventListener('click', (el) => clickSeat(i, element[i]))
+  element[i].addEventListener('mousemove', (el) => handleArrow(i, element[i]))
+}
+//localStorage.clear();
+</script>
+
+</html>
