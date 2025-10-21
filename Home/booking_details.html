@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Booking Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="header-section clearfix">
+    <a href="index.html" class="site-logo"><img src="Login_SignUp/IMG/final_logo.png" width="160" height="110" alt=""></a>
+    <div class="header-right"><div class="user-panel"><a href="Login_SignUp/Login/login.html" class="login">Login</a><a href="Login_SignUp/signup.html" class="register">Create an account</a></div></div>
+    <ul class="main-menu"><li><a href="index.html">Home</a></li><li><a href="#">Bookings</a><ul class="sub-menu"><li><a href="my_bookings.html">My Bookings</a></li><li><a href="live_status.html">Live Status</a></li></ul></li><li><a href="profile.html">Profile</a></li></ul>
+  </header>
+
+  <main class="container" style="margin-top:30px;">
+    <h2>Booking Details</h2>
+    <div id="details"></div>
+  </main>
+
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="Login_SignUp/js/auth-include.js"></script>
+  <script src="Login_SignUp/js/auth.js"></script>
+  <script>
+    (function(){
+      var qs = (function(){
+        var q = {};
+        location.search.slice(1).split('&').forEach(function(p){ if(!p) return; var kv = p.split('='); q[kv[0]] = decodeURIComponent(kv[1]||''); });
+        return q;
+      })();
+      var id = qs.id;
+      var out = document.getElementById('details');
+      if(!id){ out.innerHTML = '<p>No booking ID provided.</p>'; return; }
+      var bookings = window.EVAuth.getBookings() || [];
+      var b = bookings.find(function(x){ return x.id === id; });
+      if(!b){ out.innerHTML = '<p>Booking not found.</p>'; return; }
+      var html = '<div class="card" style="padding:16px;">';
+      html += '<h4>Slot: ' + (b.time || ('Slot ' + b.seatIndex)) + '</h4>';
+      html += '<p><strong>Booked by:</strong> ' + (b.firstname || b.email) + ' (' + b.email + ')</p>';
+      html += '<p><strong>Booking ID:</strong> ' + b.id + '</p>';
+      html += '<p><strong>Created:</strong> ' + b.createdAt + '</p>';
+      html += '<div><button id="cancelBtn" class="btn btn-danger">Cancel Booking</button> <a class="btn btn-secondary" href="my_bookings.html">Back to My Bookings</a></div>';
+      html += '</div>';
+      out.innerHTML = html;
+      var btn = document.getElementById('cancelBtn');
+      btn.addEventListener('click', function(){ if(!confirm('Cancel this booking?')) return; var res = window.EVAuth.cancelBooking(b.id); if(res && res.ok){ alert('Cancelled'); window.location.href = 'my_bookings.html'; } else alert('Failed to cancel'); });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Live Status - EV Charging</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .grid { display:flex; flex-wrap:wrap; gap:12px; }
+    .slot { width:140px; height:64px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; cursor:pointer; }
+    .slot.free { background:#6c757d; }
+    .slot.booked { background:#28a745; }
+    .slot.owns { outline:3px solid #ffc107; }
+    .legend { margin:8px 0; }
+    .small { font-size:0.9rem; color:#eee; }
+  </style>
+</head>
+<body>
+  <header class="header-section clearfix">
+    <a href="index.html" class="site-logo">
+      <img src="Login_SignUp/IMG/final_logo.png" style="padding: 10px;" width="160" height="110" alt="">
+    </a>
+    <div class="header-right">
+      <a href="#" class="hr-btn">Help</a>
+      <span>|</span>
+      <div class="user-panel">
+  <a href="Login_SignUp/Login/login.html" class="login">Login</a>
+  <a href="Login_SignUp/signup.html" class="register">Create an account</a>
+      </div>
+    </div>
+    <ul class="main-menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="#">Bookings</a>
+        <ul class="sub-menu">
+          <li><a href="my_bookings.html">My Bookings</a></li>
+          <li><a href="live_status.html">Live Status</a></li>
+        </ul>
+      </li>
+      <li><a href="profile.html">Profile</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </header>
+
+  <main class="container" style="margin-top:30px;">
+    <h2>Live Slot Status</h2>
+    <p class="small" style="color:black">Green = booked, Gray = available. Click an available slot to book it. If it's yours, click to cancel.</p>
+    <div class="legend">
+      <button id="refreshBtn" class="btn btn-sm btn-outline-light" style="color: black; background-color: #ffc107;">Refresh</button>
+      <span style="margin-left:12px;" id="statusMsg"></span>
+    </div>
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="Login_SignUp/js/auth-include.js"></script>
+  <script src="Login_SignUp/js/auth.js"></script>
+  <script>
+    (function(){
+      var gridEl = document.getElementById('grid');
+      var statusEl = document.getElementById('statusMsg');
+      var refreshBtn = document.getElementById('refreshBtn');
+
+      function loadSeats(){
+        var seatsRaw = localStorage.getItem('seats');
+        var seats = seatsRaw ? seatsRaw.split(',') : new Array(48).fill('false');
+        return seats;
+      }
+
+      function loadBookingsMap(){
+        var map = {};
+        if(window.EVAuth && window.EVAuth.getBookings){
+          var bookings = window.EVAuth.getBookings() || [];
+          bookings.forEach(function(b){ map[b.seatIndex] = b; });
+        }
+        return map;
+      }
+
+      function render(){
+        gridEl.innerHTML = '';
+        var seats = loadSeats();
+        var bmap = loadBookingsMap();
+        var cur = window.EVAuth && window.EVAuth.getCurrentUser ? window.EVAuth.getCurrentUser() : null;
+        for(var i=0;i<48;i++){
+          (function(idx){
+            var div = document.createElement('div');
+            div.className = 'slot ' + ((seats[idx] === 'true' || seats[idx] === true) ? 'booked' : 'free');
+            var label = (idx<48 && (typeof idx === 'number')) ? ( (idx<48) ? (function(){
+              // use same times as Full_charge
+              var times = [
+                "12:00AM-12:30AM","12:30AM-1:00AM","1:00AM-1:30AM","1:30AM-2:00AM",
+                "2:00AM-2:30AM","2:30AM-3:00AM","3:00AM-3:30AM","3:30AM-4:00AM",
+                "4:00AM-4:30AM","4:30AM-5:00AM","5:00AM-5:30AM","5:30AM-6:00AM",
+                "6:00AM-6:30AM","6:30AM-7:00AM","7:00AM-7:30AM","7:30AM-8:00AM",
+                "8:00AM-8:30AM","8:30AM-9:00AM","9:00AM-9:30AM","9:30AM-10:00AM",
+                "10:00AM-10:30AM","10:30AM-11:00AM","11:00AM-11:30AM","11:30AM-12:00PM",
+                "12:00PM-12:30PM","12:30PM-1:00PM","1:00PM-1:30PM","1:30PM-2:00PM",
+                "2:00PM-2:30PM","2:30PM-3:00PM","3:00PM-3:30PM","3:30PM-4:00PM",
+                "4:00PM-4:30PM","4:30PM-5:00PM","5:00PM-5:30PM","5:30PM-6:00PM",
+                "6:00PM-6:30PM","6:30PM-7:00PM","7:00PM-7:30PM","7:30PM-8:00PM",
+                "8:00PM-8:30PM","8:30PM-9:00PM","9:00PM-9:30PM","9:30PM-10:00PM",
+                "10:00PM-10:30PM","10:30PM-11:00PM","11:00PM-11:30PM","11:30PM-12:00PM"
+              ]; return times[idx] || ('Slot ' + (idx+1)); })() : ('Slot ' + (idx+1)) ) : ('Slot ' + (idx+1));
+            div.textContent = label;
+            var booking = bmap[idx];
+            if(booking){
+              div.title = 'Booked by: ' + (booking.firstname || booking.email) + '\nAt: ' + booking.createdAt;
+              if(cur && booking.email === cur.email){ div.classList.add('owns'); div.title += '\n(You) - click to cancel'; }
+            } else {
+              div.title = 'Available - click to book';
+            }
+            div.addEventListener('click', function(){
+              if(booking){
+                // if it's owned by current user allow cancel
+                if(!cur){ alert('Please login to manage bookings.'); return; }
+                if(booking.email === cur.email){
+                  if(!confirm('Cancel your booking for "' + label + '"?')) return;
+                  var res = window.EVAuth.cancelBooking(booking.id);
+                  if(res && res.ok){ statusEl.textContent = 'Booking cancelled.'; render(); }
+                  else alert((res && res.message) ? res.message : 'Failed to cancel');
+                } else {
+                  alert('This slot is booked by another user.');
+                }
+              } else {
+                // try to book
+                if(!cur){ if(confirm('You must login to book. Go to login page now?')) window.location.href = 'Login_SignUp/Login/login.html'; return; }
+                if(!confirm('Book "' + label + '" now?')) return;
+                var r = window.EVAuth.bookSeat(idx, label);
+                if(r && r.ok){ statusEl.textContent = 'Booked: ' + label; render(); }
+                else alert((r && r.message) ? r.message : 'Failed to book');
+              }
+            });
+            gridEl.appendChild(div);
+          })(i);
+        }
+      }
+
+      refreshBtn.addEventListener('click', function(){ render(); });
+
+      // Poll every 5 seconds for live updates
+      var poll = setInterval(render, 5000);
+      // initial render after EVAuth ready
+      function waitThenRender(attempts){
+        attempts = attempts || 0;
+        if(window.EVAuth && window.EVAuth.getBookings){ render(); }
+        else if(attempts < 10) setTimeout(function(){ waitThenRender(attempts+1); }, 150);
+        else render();
+      }
+      waitThenRender(0);
+    })();
+  </script>
+</body>
+</html>

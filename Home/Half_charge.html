@@ -57,18 +57,24 @@
  
   <header class="header-section clearfix">
 		<a href="index.html" class="site-logo">
-			<img  src="../Login_SignUp/IMG/final_logo.png" style="padding: 10px;" width="160px" height="110px" alt="">
+            <img  src="Login_SignUp/IMG/final_logo.png" style="padding: 10px;" width="160px" height="110px" alt="">
 		</a>
 		<div class="header-right">
 			<a href="#" class="hr-btn">Help</a>
 			<span>|</span>
 			<div class="user-panel">
-				<a href="../Login_SignUp/Login/login.html" class="login">Login</a>
-				<a href="../Login_SignUp/signup.html" class="register">Create an account</a>
+                <a href="Login_SignUp/Login/login.html" class="login">Login</a>
+                <a href="Login_SignUp/signup.html" class="register">Create an account</a>
 			</div> 
 		</div>
-		<ul class="main-menu">
-            <li><a href="index.html">Home</a></li>
+    <ul class="main-menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="#">Bookings</a>
+        <ul class="sub-menu">
+          <li><a href="my_bookings.html">My Bookings</a></li>
+          <li><a href="live_status.html">Live Status</a></li>
+        </ul>
+      </li>
 			<li><a href="#">Charge Type</a>
 				<ul class="sub-menu">
 					<li><a href="Half_charge.html">Half Charge</a></li>
@@ -77,8 +83,9 @@
 			
 				</ul>
 			</li>
-			<li><a href="blog.html">News</a></li>
-			<li><a href="contact.html">Contact</a></li>
+      <li><a href="blog.html">News</a></li>
+      <li><a href="profile.html">Profile</a></li>
+      <li><a href="contact.html">Contact</a></li>
 		</ul>
 	</header>
 	
@@ -173,5 +180,5 @@ for(let i = 0; i < 48; i++) {
 
 </html>
 <!-- auth header sync -->
-<script src="../Login_SignUp/js/auth-include.js"></script>
-<script src="../Login_SignUp/js/auth.js"></script>
+<script src="Login_SignUp/js/auth-include.js"></script>
+<script src="Login_SignUp/js/auth.js"></script>
